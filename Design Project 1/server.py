@@ -13,6 +13,7 @@ SERVER = "10.250.35.25"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
+VERSION = 1
 USERS = {}
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
