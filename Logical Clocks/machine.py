@@ -28,8 +28,8 @@ class Machine:
 
 
     def run(self):
-        server_thread = background_thread = threading.Thread(target=self.start_server)
-        client_thread = background_thread = threading.Thread(target=self.start_client)
+        server_thread = threading.Thread(target=self.start_server)
+        client_thread = threading.Thread(target=self.start_client)
         server_thread.start()
         client_thread.start()
         # for i in range(10):
