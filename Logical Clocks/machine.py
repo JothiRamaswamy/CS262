@@ -1,9 +1,13 @@
 from multiprocessing import Process
-import os
+from logical_clock import LogicalClock
+from queue import Queue
+import logging
 import random
 import socket
+import signal
 import threading
 import time
+
 
 class Machine:
 
@@ -13,10 +17,15 @@ class Machine:
 
         self.name = name
         self.clock_speed = random.randint(1,6)
-        self.log = []
+
+        self.message_queue = Queue()
+
+        logging.basicConfig(filename=f'log_{name}.log', level=logging.INFO, filemode='w')
 
         self.first_other_client_name = (self.name + 1) % 3 #our client connects to their server
         self.second_other_client_name = (self.name - 1) % 3 #their client connects to our server
+
+        self.logical_clock = LogicalClock()
 
         self.SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
         self.SERVER_HOST_NAME = socket.gethostname() # gets name representing computer on the network
@@ -28,36 +37,69 @@ class Machine:
         self.CLIENT_LISTEN = True
 
         self.CLIENT = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.CLIENT_PORT = 5050 + self.first_other_client_name
+        self.CLIENT_PORT = 2000 + self.first_other_client_name
         self.CLIENT_ADDR = (self.SERVER_HOST, self.CLIENT_PORT)
+
+        self.ACTIVE = True
+
+        # atexit.register(self.cleanup)
+        signal.signal(signal.SIGTERM, self.cleanup)
+        # signal.signal(signal.SIGINT, self.cleanup)
+
         
 
 
     def run(self):
         server_thread = threading.Thread(target=self.start_server)
-        client_thread = threading.Thread(target=self.start_client)
         server_thread.start()
-        client_thread.start()
-        time.sleep(1)
-        for i in range(20):
-            start_time = time.time()
-            task = random.randint(1,10)
-            if task <= 3:
-                message = "[{}, task {}] the time is {}".format(self.name, task, i)
-                if task != 2:
-                    print(task)
-                    self.CLIENT_LISTEN = False
-                    self.CLIENT.send(message.encode())
-                    self.CLIENT_LISTEN = True
-                if task != 1:
-                    print(task)
-                    self.SERVER_LISTEN = False
-                    self.CONN.send(message.encode())
-                    self.SERVER_LISTEN = True
+        time.sleep(5)
 
-            end_time = time.time()
-            time.sleep(max(1/self.clock_speed - (start_time - end_time), 0))
-        print("DONE")
+        client_thread = threading.Thread(target=self.start_client)
+        client_thread.start()
+        time.sleep(5)
+
+        try:
+            for i in range(100):
+                start_time = time.time()
+                if self.message_queue.empty():
+                    task = random.randint(1,10)
+                    if task <= 3:
+                        message = "[{}, task {}] the time is {}".format(self.name, task, self.logical_clock.get_time())
+                        if task == 1:
+                            self.CLIENT_LISTEN = False
+                            self.CLIENT.send(message.encode())
+                            self.CLIENT_LISTEN = True
+                        elif task == 2:
+                            self.SERVER_LISTEN = False
+                            self.CONN.send(message.encode())
+                            self.SERVER_LISTEN = True
+                        elif task == 3:
+                            self.CLIENT.send(message.encode())
+                            self.CONN.send(message.encode())
+                        self.logical_clock.tick()
+                        logging.info(f"Sent Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Message - {message}")
+                    
+                else:
+                    message = self.message_queue.get()
+                    self.logical_clock.tick()
+                    logging.info(f"Received Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}")
+
+                    print(message)
+                end_time = time.time()
+                time.sleep(max(1/self.clock_speed - (start_time - end_time), 0))
+            print("DONE")
+        except KeyboardInterrupt:
+            pass
+
+    def cleanup(self, exitcode=None, exitstack=None):
+        print("Cleaning up...")
+        # close the sockets
+        self.SERVER_LISTEN = False
+        self.CLIENT_LISTEN = False
+        self.ACTIVE = False
+        time.sleep(2)
+        self.SERVER.close()
+        self.CLIENT.close()
 
 
     def start_server(self):
@@ -67,16 +109,21 @@ class Machine:
         self.CONN, addr = self.SERVER.accept()
         print(f"[NEW CONNECTION] {addr} connected.")
         
-        connected = True
-        while(connected):
+        while(self.ACTIVE):
             if self.SERVER_LISTEN:
+                
                 try:
-                    message = self.CONN.recv(self.HEADER, socket.MSG_DONTWAIT)
+                    self.CONN.settimeout(1)
+                    message = self.CONN.recv(self.HEADER)
                     if message.decode(self.FORMAT):
                         decoded_message = message.decode(self.FORMAT)
-                        print(decoded_message)
+                        self.message_queue.put(decoded_message)
+                except socket.timeout:
+                    pass
                 except BlockingIOError:
                     pass
+                except (ConnectionResetError, ConnectionAbortedError) as e:
+                    print(f"[CONNECTION ABORTED] {e}")
 
 
     def start_client(self):
@@ -92,13 +139,16 @@ class Machine:
                 print(e)
                 time.sleep(1)
                 client_connected = False
-        while(True):
+        while(self.ACTIVE):
             if self.CLIENT_LISTEN:
                 try:
+                    self.CLIENT.settimeout(1) # set a timeout of 1 second
                     message = self.CLIENT.recv(self.HEADER, socket.MSG_DONTWAIT)
                     if message.decode(self.FORMAT):
                         decoded_message = message.decode(self.FORMAT)
-                        print(decoded_message)
+                        self.message_queue.put(decoded_message)
+                except socket.timeout:
+                    pass
                 except BlockingIOError:
                     pass
 
@@ -111,9 +161,9 @@ def start_machine(name, port):
     client.run()
 
 if __name__ == '__main__':
-    p = Process(target=start_machine, args=(0, 5050,))
-    p2 = Process(target=start_machine, args=(1, 5051,))
-    p3 = Process(target=start_machine, args=(2, 5052,))
+    p = Process(target=start_machine, args=(0, 2000,))
+    p2 = Process(target=start_machine, args=(1, 2001,))
+    p3 = Process(target=start_machine, args=(2, 2002,))
     try:
         p.start()
         p2.start()
@@ -122,4 +172,8 @@ if __name__ == '__main__':
         p2.join()
         p3.join()
     except KeyboardInterrupt:
-        pass
+        print("Keyboard interrupt detected. Exiting program...")
+    finally:
+        p.terminate()
+        p2.terminate()
+        p3.terminate()
