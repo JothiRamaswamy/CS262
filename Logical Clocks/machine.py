@@ -8,6 +8,9 @@ import time
 class Machine:
 
     def __init__(self, name, port) -> None:
+        self.HEADER = 64
+        self.FORMAT = 'utf-8'
+
         self.name = name
         self.clock_speed = random.randint(1,6)
         self.log = []
@@ -32,19 +35,37 @@ class Machine:
         client_thread = threading.Thread(target=self.start_client)
         server_thread.start()
         client_thread.start()
-        # for i in range(10):
-        #     start_time = time.time()
-        #     print("hi", self.name)
-        #     end_time = time.time()
-        #     time.sleep(1/self.clock_speed - (start_time - end_time))
+        client_thread.join()
+        time.sleep(1)
+        for i in range(20):
+            start_time = time.time()
+            task = random.randint(1,10)
+            if task == 1:
+                message = "the time is {}".format(i)
+                self.CLIENT.send(message.encode())
+            end_time = time.time()
+            time.sleep(1/self.clock_speed - (start_time - end_time))
 
 
-    def start_client(self):
+    def start_server(self):
         self.SERVER.bind(self.ADDR)
         self.SERVER.listen()
         print("machine {} connected and listening to {}".format(self.name, self.ADDR))
+        conn, addr = self.SERVER.accept()
+        print(f"[NEW CONNECTION] {addr} connected.")
+        
+        connected = True
+        while(connected):
+            try:
+                message = conn.recv(self.HEADER, socket.MSG_DONTWAIT)
+                if message.decode(self.FORMAT):
+                    decoded_message = message.decode(self.FORMAT)
+                    print(decoded_message)
+            except BlockingIOError:
+                pass
 
-    def start_server(self):
+
+    def start_client(self):
         client_connected = False
         time.sleep(1)
         while(client_connected == False):
@@ -54,6 +75,8 @@ class Machine:
                 print("machine {} connected to server {}".format(self.name, self.CLIENT_ADDR))
                 break
             except Exception as e:
+                print(e)
+                time.sleep(1)
                 client_connected = False
 
     def export_log():
