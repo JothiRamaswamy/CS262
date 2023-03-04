@@ -59,23 +59,14 @@ class Machine:
     def export_log():
         pass
 
-def info(title):
-    print(title)
-    print('module name:', __name__)
-    print('parent process:', os.getppid())
-    print('process id:', os.getpid())
-
-def f(name, port):
-    # info('function f')
-    # print('hello', name)
+def start_machine(name, port):
     client = Machine(name, port)
     client.run()
 
 if __name__ == '__main__':
-    info('main line')
-    p = Process(target=f, args=(0, 5050,))
-    p2 = Process(target=f, args=(1, 5051,))
-    p3 = Process(target=f, args=(2, 5052,))
+    p = Process(target=start_machine, args=(0, 5050,))
+    p2 = Process(target=start_machine, args=(1, 5051,))
+    p3 = Process(target=start_machine, args=(2, 5052,))
     p.start()
     p2.start()
     p3.start()
