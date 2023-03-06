@@ -11,7 +11,7 @@ class LogicalClock:
         
     def update(self, other):
         with self.lock:
-            self.time = max(self.time, other.time) + 1
+            self.time = max(self.time, other) + 1
         
     def get_time(self):
         with self.lock:

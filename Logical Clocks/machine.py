@@ -37,15 +37,15 @@ class Machine:
         self.SERVER_LISTEN = True
         self.CLIENT_LISTEN = True
 
+        self.cleanup_lock = threading.Lock()
+        self.CLEANED_UP = False
+
         self.CLIENT = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.CLIENT_PORT = 2000 + self.first_other_client_name
+        self.CLIENT_PORT = 6000 + self.first_other_client_name
         self.CLIENT_ADDR = (self.SERVER_HOST, self.CLIENT_PORT)
 
         self.ACTIVE = True
-
-        # atexit.register(self.cleanup)
         signal.signal(signal.SIGTERM, self.cleanup)
-        # signal.signal(signal.SIGINT, self.cleanup)
 
         
 
@@ -86,7 +86,8 @@ class Machine:
                     
                 else:
                     message = self.message_queue.get()
-                    self.logical_clock.tick()
+                    counterparty_clock = int(message.split()[-1])
+                    self.logical_clock.update(counterparty_clock)
                     logging.info(f"Received Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}, Message - {message}")
 
                     print(message)
@@ -97,14 +98,16 @@ class Machine:
             pass
 
     def cleanup(self, exitcode=None, exitstack=None):
-        print("Cleaning up...")
-        # close the sockets
-        self.SERVER_LISTEN = False
-        self.CLIENT_LISTEN = False
-        self.ACTIVE = False
-        time.sleep(2)
-        self.SERVER.close()
-        self.CLIENT.close()
+        with self.cleanup_lock:
+            print("Cleaning up...")
+            self.CLEANED_UP = True
+            # close the sockets
+            self.SERVER_LISTEN = False
+            self.CLIENT_LISTEN = False
+            self.ACTIVE = False
+            time.sleep(2)
+            self.SERVER.close()
+            self.CLIENT.close()
 
 
     def start_server(self):
@@ -116,7 +119,6 @@ class Machine:
         
         while(self.ACTIVE):
             if self.SERVER_LISTEN:
-                
                 try:
                     self.CONN.settimeout(1)
                     message = self.CONN.recv(self.HEADER)
@@ -162,18 +164,18 @@ class Machine:
                     break
 
 
-    def export_log():
-        pass
 
 def start_machine(name, port):
     client = Machine(name, port)
     client.run()
-    client.cleanup()
+    time.sleep(5)
+    if not client.CLEANED_UP:
+        client.cleanup()
 
 if __name__ == '__main__':
-    p = Process(target=start_machine, args=(0, 2000,))
-    p2 = Process(target=start_machine, args=(1, 2001,))
-    p3 = Process(target=start_machine, args=(2, 2002,))
+    p = Process(target=start_machine, args=(0, 6000,))
+    p2 = Process(target=start_machine, args=(1, 6001,))
+    p3 = Process(target=start_machine, args=(2, 6002,))
     try:
         p.start()
         p2.start()
