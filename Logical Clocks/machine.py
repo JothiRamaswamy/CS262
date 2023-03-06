@@ -21,6 +21,7 @@ class Machine:
         self.message_queue = Queue()
 
         logging.basicConfig(filename=f'log_{name}.log', level=logging.INFO, filemode='w')
+        logging.info(f"Clock Speed: {self.clock_speed}")
 
         self.first_other_client_name = (self.name + 1) % 3 #our client connects to their server
         self.second_other_client_name = (self.name - 1) % 3 #their client connects to our server
@@ -65,7 +66,7 @@ class Machine:
                 if self.message_queue.empty():
                     task = random.randint(1,10)
                     if task <= 3:
-                        message = "[{}, task {}] the time is {}".format(self.name, task, self.logical_clock.get_time())
+                        message = "[machine {}, task {}] the time is {}".format(self.name, task, self.logical_clock.get_time())
                         if task == 1:
                             self.CLIENT_LISTEN = False
                             self.CLIENT.send(message.encode())
