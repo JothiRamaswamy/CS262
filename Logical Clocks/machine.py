@@ -7,6 +7,7 @@ import socket
 import signal
 import threading
 import time
+import csv
 
 
 class Machine:
@@ -20,6 +21,11 @@ class Machine:
 
         self.message_queue = Queue()
 
+
+        self.csv_log = f'log_{self.name}_{self.clock_speed}.csv'
+        with open(self.csv_log, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["timestamp", "logical_clock_time", "queue_length", "event_type"])
         logging.basicConfig(filename=f'log_{name}.log', level=logging.INFO, filemode='w')
         logging.info(f"Clock Speed: {self.clock_speed}")
 
@@ -79,17 +85,28 @@ class Machine:
                             self.CLIENT.send(message.encode())
                             self.CONN.send(message.encode())
                         self.logical_clock.tick()
-                        logging.info(f"Sent Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}, Message - {message}")
+                        global_time, logical_clock_time, queue_length = time.time(), self.logical_clock.get_time(), self.message_queue.qsize()
+                        logging.info(f"Sent Message: System Time - {global_time}, Logical Clock Time - {logical_clock_time}, Queue Length - {queue_length}, Message - {message}")
+                        with open(self.csv_log, 'a', newline='') as csvfile:
+                            writer = csv.writer(csvfile)
+                            writer.writerow([global_time, logical_clock_time, queue_length, "Send"])
                     else:
                         self.logical_clock.tick()
-                        logging.info(f"Internal Event: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}")
-                    
+                        global_time, logical_clock_time, queue_length = time.time(), self.logical_clock.get_time(), self.message_queue.qsize()
+                        logging.info(f"Internal Event: System Time - {global_time}, Logical Clock Time - {logical_clock_time}, Queue Length - {queue_length}")
+                        with open(self.csv_log, 'a', newline='') as csvfile:
+                            writer = csv.writer(csvfile)
+                            writer.writerow([global_time, logical_clock_time, queue_length, "Internal"])                    
                 else:
                     message = self.message_queue.get()
                     counterparty_clock = int(message.split()[-1])
                     self.logical_clock.update(counterparty_clock)
-                    logging.info(f"Received Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}, Message - {message}")
 
+                    global_time, logical_clock_time, queue_length = time.time(), self.logical_clock.get_time(), self.message_queue.qsize()
+                    logging.info(f"Received Message: System Time - {global_time}, Logical Clock Time - {logical_clock_time}, Queue Length - {queue_length}")
+                    with open(self.csv_log, 'a', newline='') as csvfile:
+                        writer = csv.writer(csvfile)
+                        writer.writerow([global_time, logical_clock_time, queue_length, "Received"]) 
                     print(message)
                 end_time = time.time()
                 time.sleep(max(1/self.clock_speed - (start_time - end_time), 0))
