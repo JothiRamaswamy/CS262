@@ -59,7 +59,8 @@ class Machine:
         time.sleep(5)
 
         try:
-            for i in range(100):
+            curr_time = time.time()
+            while(time.time() - curr_time < 60):
                 start_time = time.time()
                 if self.message_queue.empty():
                     task = random.randint(1,10)
@@ -77,12 +78,15 @@ class Machine:
                             self.CLIENT.send(message.encode())
                             self.CONN.send(message.encode())
                         self.logical_clock.tick()
-                        logging.info(f"Sent Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Message - {message}")
+                        logging.info(f"Sent Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}, Message - {message}")
+                    else:
+                        self.logical_clock.tick()
+                        logging.info(f"Internal Event: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}")
                     
                 else:
                     message = self.message_queue.get()
                     self.logical_clock.tick()
-                    logging.info(f"Received Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}")
+                    logging.info(f"Received Message: System Time - {time.time()}, Logical Clock Time - {self.logical_clock.get_time()}, Queue Length - {self.message_queue.qsize()}, Message - {message}")
 
                     print(message)
                 end_time = time.time()
@@ -122,8 +126,9 @@ class Machine:
                     pass
                 except BlockingIOError:
                     pass
-                except (ConnectionResetError, ConnectionAbortedError) as e:
-                    print(f"[CONNECTION ABORTED] {e}")
+                except (ConnectionResetError, ConnectionAbortedError):
+                    print("CONNECTION ABORTED")
+                    break
 
 
     def start_client(self):
@@ -151,6 +156,9 @@ class Machine:
                     pass
                 except BlockingIOError:
                     pass
+                except ConnectionResetError:
+                    print("CONNECTION ABORTED")
+                    break
 
 
     def export_log():
@@ -159,6 +167,7 @@ class Machine:
 def start_machine(name, port):
     client = Machine(name, port)
     client.run()
+    client.cleanup()
 
 if __name__ == '__main__':
     p = Process(target=start_machine, args=(0, 2000,))
