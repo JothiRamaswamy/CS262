@@ -41,7 +41,7 @@ class Machine:
         self.SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # create socket
         self.SERVER_HOST_NAME = socket.gethostname() # gets name representing computer on the network
         self.SERVER_HOST = socket.gethostbyname(self.SERVER_HOST_NAME) # gets host IPv4 address
-        self.PORT = port # port to connect to the server with
+        self.PORT = port + name # port to connect to the server with
         self.ADDR = (self.SERVER_HOST, self.PORT) # address that the server is listening into
 
         self.SERVER_LISTEN = True
@@ -51,7 +51,7 @@ class Machine:
         self.CLEANED_UP = False
 
         self.CLIENT = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.CLIENT_PORT = 6000 + self.first_other_client_name
+        self.CLIENT_PORT = port + self.first_other_client_name
         self.CLIENT_ADDR = (self.SERVER_HOST, self.CLIENT_PORT)
 
         self.ACTIVE = True
@@ -120,15 +120,16 @@ class Machine:
 
     def cleanup(self, exitcode=None, exitstack=None):
         with self.cleanup_lock:
-            print("Cleaning up...")
-            self.CLEANED_UP = True
-            # close the sockets
-            self.SERVER_LISTEN = False
-            self.CLIENT_LISTEN = False
-            self.ACTIVE = False
-            time.sleep(2)
-            self.SERVER.close()
-            self.CLIENT.close()
+            if not self.CLEANED_UP:
+                print("Cleaning up...")
+                self.CLEANED_UP = True
+                # close the sockets
+                self.SERVER_LISTEN = False
+                self.CLIENT_LISTEN = False
+                self.ACTIVE = False
+                time.sleep(2)
+                self.SERVER.close()
+                self.CLIENT.close()
 
 
     def start_server(self):
@@ -190,14 +191,14 @@ def start_machine(name, port, log_dir):
     client = Machine(name, port,log_dir)
     client.run()
     time.sleep(5)
-    if not client.CLEANED_UP:
-        client.cleanup()
+    client.cleanup()
 
 if __name__ == '__main__':
     random.seed(262)
-    p = Process(target=start_machine, args=(0, 6000,"experiment1",))
-    p2 = Process(target=start_machine, args=(1, 6001,"experiment1",))
-    p3 = Process(target=start_machine, args=(2, 6002,"experiment1",))
+    starting_port = 3000
+    p = Process(target=start_machine, args=(0, starting_port,"experiment1",))
+    p2 = Process(target=start_machine, args=(1, starting_port,"experiment1",))
+    p3 = Process(target=start_machine, args=(2, starting_port,"experiment1",))
     try:
         p.start()
         p2.start()
