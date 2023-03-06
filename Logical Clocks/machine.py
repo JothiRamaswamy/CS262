@@ -8,11 +8,12 @@ import signal
 import threading
 import time
 import csv
+import os
 
 
 class Machine:
 
-    def __init__(self, name, port) -> None:
+    def __init__(self, name, port, log_directory="logs") -> None:
         self.HEADER = 64
         self.FORMAT = 'utf-8'
 
@@ -21,12 +22,15 @@ class Machine:
 
         self.message_queue = Queue()
 
+        os.makedirs(log_directory, exist_ok=True)
+        os.makedirs(f"{log_directory}/logs", exist_ok=True)
+        os.makedirs(f"{log_directory}/csvs", exist_ok=True)
 
-        self.csv_log = f'log_{self.name}_{self.clock_speed}.csv'
+        self.csv_log = f'{log_directory}/csvs/log_{self.name}_{self.clock_speed}.csv'
         with open(self.csv_log, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(["timestamp", "logical_clock_time", "queue_length", "event_type"])
-        logging.basicConfig(filename=f'log_{name}.log', level=logging.INFO, filemode='w')
+        logging.basicConfig(filename=f'{log_directory}/logs/log_{name}.log', level=logging.INFO, filemode='w')
         logging.info(f"Clock Speed: {self.clock_speed}")
 
         self.first_other_client_name = (self.name + 1) % 3 #our client connects to their server
@@ -182,17 +186,18 @@ class Machine:
 
 
 
-def start_machine(name, port):
-    client = Machine(name, port)
+def start_machine(name, port, log_dir):
+    client = Machine(name, port,log_dir)
     client.run()
     time.sleep(5)
     if not client.CLEANED_UP:
         client.cleanup()
 
 if __name__ == '__main__':
-    p = Process(target=start_machine, args=(0, 6000,))
-    p2 = Process(target=start_machine, args=(1, 6001,))
-    p3 = Process(target=start_machine, args=(2, 6002,))
+    random.seed(262)
+    p = Process(target=start_machine, args=(0, 6000,"experiment1",))
+    p2 = Process(target=start_machine, args=(1, 6001,"experiment1",))
+    p3 = Process(target=start_machine, args=(2, 6002,"experiment1",))
     try:
         p.start()
         p2.start()
