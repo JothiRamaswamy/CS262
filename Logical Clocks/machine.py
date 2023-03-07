@@ -119,17 +119,16 @@ class Machine:
             pass
 
     def cleanup(self, exitcode=None, exitstack=None):
-        with self.cleanup_lock:
-            if not self.CLEANED_UP:
-                print("Cleaning up...")
-                self.CLEANED_UP = True
-                # close the sockets
-                self.SERVER_LISTEN = False
-                self.CLIENT_LISTEN = False
-                self.ACTIVE = False
-                time.sleep(2)
-                self.SERVER.close()
-                self.CLIENT.close()
+        if not self.CLEANED_UP:
+            print("Cleaning up...")
+            self.CLEANED_UP = True
+            # close the sockets
+            self.SERVER_LISTEN = False
+            self.CLIENT_LISTEN = False
+            self.ACTIVE = False
+            time.sleep(2)
+            self.SERVER.close()
+            self.CLIENT.close()
 
 
     def start_server(self):

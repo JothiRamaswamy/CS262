@@ -1,0 +1,61 @@
+INFO:root:Clock Speed: 1
+INFO:root:Internal Event: System Time - 1678137276.102226, Logical Clock Time - 1, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137277.106775, Logical Clock Time - 2, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137278.1135051, Logical Clock Time - 3, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137279.121023, Logical Clock Time - 4, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137280.127629, Logical Clock Time - 5, Queue Length - 0, Message - [machine 1, task 3] the time is 4
+INFO:root:Received Message: System Time - 1678137281.1308439, Logical Clock Time - 6, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137282.135683, Logical Clock Time - 7, Queue Length - 0, Message - [machine 1, task 3] the time is 6
+INFO:root:Internal Event: System Time - 1678137283.14482, Logical Clock Time - 8, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137284.149487, Logical Clock Time - 9, Queue Length - 0, Message - [machine 1, task 2] the time is 8
+INFO:root:Internal Event: System Time - 1678137285.153263, Logical Clock Time - 10, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137286.1567822, Logical Clock Time - 11, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137287.161428, Logical Clock Time - 12, Queue Length - 0, Message - [machine 1, task 3] the time is 11
+INFO:root:Internal Event: System Time - 1678137288.16814, Logical Clock Time - 13, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137289.175609, Logical Clock Time - 14, Queue Length - 1
+INFO:root:Received Message: System Time - 1678137290.18322, Logical Clock Time - 15, Queue Length - 1
+INFO:root:Received Message: System Time - 1678137291.188868, Logical Clock Time - 16, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137292.1953878, Logical Clock Time - 17, Queue Length - 0, Message - [machine 1, task 3] the time is 16
+INFO:root:Internal Event: System Time - 1678137293.1995652, Logical Clock Time - 18, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137294.206652, Logical Clock Time - 19, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137295.213163, Logical Clock Time - 20, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137296.218155, Logical Clock Time - 21, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137297.222046, Logical Clock Time - 22, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137298.22816, Logical Clock Time - 23, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137299.234294, Logical Clock Time - 24, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137300.240845, Logical Clock Time - 25, Queue Length - 0, Message - [machine 1, task 2] the time is 24
+INFO:root:Internal Event: System Time - 1678137301.246203, Logical Clock Time - 26, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137302.2484639, Logical Clock Time - 27, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137303.2541409, Logical Clock Time - 28, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137304.259288, Logical Clock Time - 29, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137305.2623591, Logical Clock Time - 30, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137306.267875, Logical Clock Time - 31, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137307.273289, Logical Clock Time - 32, Queue Length - 0, Message - [machine 1, task 3] the time is 31
+INFO:root:Sent Message: System Time - 1678137308.278049, Logical Clock Time - 33, Queue Length - 0, Message - [machine 1, task 3] the time is 32
+INFO:root:Internal Event: System Time - 1678137309.281953, Logical Clock Time - 34, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137310.288512, Logical Clock Time - 35, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137311.2947378, Logical Clock Time - 36, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137312.2967958, Logical Clock Time - 37, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137313.299387, Logical Clock Time - 38, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137314.300985, Logical Clock Time - 39, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137315.305599, Logical Clock Time - 40, Queue Length - 0, Message - [machine 1, task 1] the time is 39
+INFO:root:Internal Event: System Time - 1678137316.3117042, Logical Clock Time - 41, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137317.317865, Logical Clock Time - 42, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137318.323487, Logical Clock Time - 43, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137319.327035, Logical Clock Time - 44, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137320.3320692, Logical Clock Time - 45, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137321.337468, Logical Clock Time - 46, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137322.340808, Logical Clock Time - 47, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137323.345539, Logical Clock Time - 48, Queue Length - 0, Message - [machine 1, task 3] the time is 47
+INFO:root:Internal Event: System Time - 1678137324.352038, Logical Clock Time - 49, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137325.353955, Logical Clock Time - 50, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137326.357001, Logical Clock Time - 51, Queue Length - 0
+INFO:root:Sent Message: System Time - 1678137327.360936, Logical Clock Time - 52, Queue Length - 0, Message - [machine 1, task 1] the time is 51
+INFO:root:Internal Event: System Time - 1678137328.3663292, Logical Clock Time - 53, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137329.368761, Logical Clock Time - 54, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137330.372195, Logical Clock Time - 55, Queue Length - 0
+INFO:root:Received Message: System Time - 1678137331.3749619, Logical Clock Time - 56, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137332.37988, Logical Clock Time - 57, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137333.385441, Logical Clock Time - 58, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137334.3900769, Logical Clock Time - 59, Queue Length - 0
+INFO:root:Internal Event: System Time - 1678137335.393528, Logical Clock Time - 60, Queue Length - 0
