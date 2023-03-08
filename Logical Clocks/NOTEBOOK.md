@@ -15,7 +15,7 @@ For the above reason, it also makes sense that the faster clocks tend to have a 
 
 The slower clocks see a general increase in the queue size over time, enough that there are still excess messages to be read even after the minute-long run is finished. This causes the slowest machine to have a lower final logical clock time compared to the other machines because it has not read the most recent messages at the higher logical clock times of other machines at the end of the minute.
 
-![time_plots](https://user-images.githubusercontent.com/29786053/223855947-aad6c749-8a0f-4ac0-acf2-1177a8ad743c.png)
+<img width="511" alt="image" src="https://user-images.githubusercontent.com/29786053/223855947-aad6c749-8a0f-4ac0-acf2-1177a8ad743c.png">
 
 ## Analysis of Event Distribution
 
