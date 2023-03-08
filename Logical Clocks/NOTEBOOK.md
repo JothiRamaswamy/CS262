@@ -13,9 +13,15 @@ In the normal case (the case according to the assignment specification), the jum
 
 For the above reason, it also makes sense that the faster clocks tend to have a queue size close to 0, while the slower clocks tend to see an increase in the queue size over time. The machines with a middle level of speed are a mix in the middle, and tend to see queue sizes closer to 0, but still retrieve messages more often than the faster machines.
 
+The slower clocks see a general increase in the queue size over time, enough that there are still excess messages to be read even after the minute-long run is finished. This causes the slowest machine to have a lower final logical clock time compared to the other machines because it has not read the most recent messages at the higher logical clock times of other machines at the end of the minute.
+
+![time_plots](https://user-images.githubusercontent.com/29786053/223855947-aad6c749-8a0f-4ac0-acf2-1177a8ad743c.png)
+
 ## Analysis of Event Distribution
 
 Also for similar reasons mentioned above, there was a discrepancy between the types of events performed (send message, retrive message, internal event) based on the machine speed. The fastest machines tended to have more send message events and internal events than retrieve message events because it was more likely to have an empty message queue. The slower machines tended to only really have retrieve message events because their queue was more likely to contain messages. The machines with a middle level of speed tended to lie somewhere in the middle.
+
+<img width="511" alt="image" src="https://user-images.githubusercontent.com/29786053/223854592-80e00723-3ef6-4aea-9b17-fe476cd84987.png">
 
 ## Analysis of Logical Clock Drift
 
@@ -28,6 +34,8 @@ We tested out our code with additional clock rate ranges of: [1,1], [1,4], [1,8]
 We also see that shrinking the clock rate range results in a more even distribution of send message events/internal events and receive events across machines of all speeds. This is due to the decrease in the speed discrepancy of the machines, so one machine is less liekly to dominate by sending machines relatively much faster than the other machines. This also means that the queue size across these machines is lower on average, and closer to 0. 
 
 On the other hand, with a larger clock rate range, we see much more discrepancy between the clock rates of the different machines, resulting in larger logical clock jumps, drift, and queue sizes for the slowest machines, and resulting in a larger proportion of events on the slower machines being retrieve message events.
+
+<img width="511" alt="image" src="https://user-images.githubusercontent.com/29786053/223854349-8d904c43-7f5d-4782-8e24-a3ba19c49f14.png">
 
 ## Analysis of the change in Internal Event Likelihood
 We tested our code with task ranges of [1,3], [1,5], [1,7], [1,20], where any task number above 3 is an internal event. If we decrease the likelihood of an internal event, we see that the discrepancy between event types on each machine increase. Spefically, the slower machines have a larger proportion of receiving messages and the faster machines have a larger proportion of sending messages. This makes sense because the faster machines are more likely to send a message now when their machines have no messages to read, so they send more messages as a result.
