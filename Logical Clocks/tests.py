@@ -14,6 +14,19 @@ class LogicalClockTests(TestCase):
 
 
     def test_listen_through_socket(self):
+        '''
+        Description:
+        - This function tests the functionality of the listen_through_socket method of a 
+        machine object. It sets up a mock message queue and a mock socket object and simulates 
+        receiving a message through the socket. It then asserts that the message was added 
+        to the message queue.
+
+        Parameters:
+        - self: the instance of the test class
+
+        Return:
+        - None
+        '''
 
         # mock the message queue for this specific function as we are mocking its inputs later
         self.this_machine.message_queue = Mock()
@@ -35,6 +48,19 @@ class LogicalClockTests(TestCase):
 
 
     def test_run_tasks(self):
+        '''
+        Description:
+        - This function tests the functionality of the run_tasks method of a machine object. 
+        It sets up a mock socket object and simulates sending messages through the socket 
+        using different task types. It then asserts that the correct number of calls to the 
+        send method were made and that the logical clock was updated correctly.
+
+        Parameters:
+        - self: the instance of the test class
+        
+        Return:
+        - None
+        '''
 
         self.this_machine.logical_clock = LogicalClock()
 
@@ -96,6 +122,19 @@ class LogicalClockTests(TestCase):
             self.assertEqual(self.this_machine.logical_clock.get_time(), 4)
 
     def test_pop_message(self):
+        '''
+        Description:
+        - This function tests the functionality of the pop_message method of a machine 
+        object when messages exist to be read. It sets up a message queue and a logical 
+        clock and simulates popping messages from the queue. It then asserts that the 
+        queue size and logical clock were updated correctly.
+
+        Parameters:
+        - self: the instance of the test class
+
+        Return:
+        - None
+        '''
 
         self.this_machine.message_queue = Queue()
         self.this_machine.logical_clock = LogicalClock()
@@ -126,6 +165,18 @@ class LogicalClockTests(TestCase):
 
 
     def test_logical_clock_methods(self):
+        '''
+        Description:
+        - This function tests the functionality of the LogicalClock class methods. It 
+        creates an instance of the class and tests the tick and update methods. It then 
+        asserts that the time was updated correctly.
+
+        Parameters:
+        - self: the instance of the test class
+
+        Return:
+        - None
+        '''
         logical_clock = LogicalClock()
 
         # test that the logical clock is initially set to 0
